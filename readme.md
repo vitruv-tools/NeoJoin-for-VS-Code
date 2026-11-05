@@ -10,7 +10,7 @@ The extension starts the language server of NeoJoin (built in the NeoJoin reposi
 
 ### Requirements
 
-* [VSCode](https://code.visualstudio.com/)
+* [VSCode](https://code.visualstudio.com/) 1.91 or newer
 * [Graphviz](https://plantuml.com/graphviz-dot) *(for the view type visualization)*
 * JRE 17+ *(for the language server)*
 
@@ -38,7 +38,7 @@ Provides basic IDE support (syntax highlighting, code-completion, etc.) and a si
 
 ### Requirements
 
-* Node.js 20 (+ NPM)
+* Node.js 20.19 or newer (+ NPM)
 * JDK 21+ *(to build the language server in the [NeoJoin](https://github.com/vitruv-tools/NeoJoin) repository)*
 
 ### VSCode Extension

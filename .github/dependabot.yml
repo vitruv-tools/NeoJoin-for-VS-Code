@@ -21,3 +21,9 @@ updates:
       - "@stylistic/eslint-plugin"
       - "eslint"
       - "typescript-eslint"
+  ignore:
+  - dependency-name: "@types/vscode" # has to match engines.vscode in package.json (vscode-languageclient requires 1.91)
+  - dependency-name: "@types/node" # has to match the Node.js version of the extension host (20)
+    update-types: ["version-update:semver-major"]
+  - dependency-name: "typescript" # not yet supported by typescript-eslint
+    update-types: ["version-update:semver-major"]
