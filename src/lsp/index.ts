@@ -32,11 +32,11 @@ const EXEC_OPTIONS = (() => {
     if (DEV) {
         return {
             jarFile:
-                "../lang/frontend/ide/target/tools.vitruv.neojoin.frontend.ide.jar",
+                "../NeoJoin/frontend/ide/target/tools.vitruv.neojoin.frontend.ide.jar",
             jvmOpts: [
                 "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:8000", // set suspend=y to wait for debugger on launch
             ],
-            programOpts: ["--trace", "--log", "neojoin-debug.log"], // log is placed in /path/to/neojoin/vscode-plugin/neojoin-debug.log
+            programOpts: ["--trace", "--log", "neojoin-debug.log"], // log is placed in /path/to/NeoJoin-for-VS-Code/neojoin-debug.log
         };
     } else {
         return {

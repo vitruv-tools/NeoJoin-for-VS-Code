@@ -101,7 +101,7 @@ export async function activate(context: ExtensionContext) {
         }
     } catch (e) {
         vscode.window.showErrorMessage(
-            "Failed to initialize NeoJoin Plugin: " + getErrorMessage(e)
+            "Failed to initialize NeoJoin Extension: " + getErrorMessage(e)
         );
     }
 }

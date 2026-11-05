@@ -7,7 +7,7 @@
     "version": "1.0.0",
     "repository": {
         "type": "git",
-        "url": "https://github.com/vitruv-tools/NeoJoin"
+        "url": "https://github.com/vitruv-tools/NeoJoin-for-VS-Code"
     },
     "publisher": "vitruv-tools",
     "engines": {

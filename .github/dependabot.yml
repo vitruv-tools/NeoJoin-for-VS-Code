@@ -1,0 +1,23 @@
+version: 2
+updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: daily
+  commit-message:
+    prefix: "GitHub Actions"
+    include: "scope"
+- package-ecosystem: "npm"
+  directory: "/"
+  schedule:
+    interval: daily
+  commit-message:
+    prefix: "NPM"
+    include: "scope"
+  groups:
+    eslint:
+      patterns:
+      - "@eslint/js"
+      - "@stylistic/eslint-plugin"
+      - "eslint"
+      - "typescript-eslint"

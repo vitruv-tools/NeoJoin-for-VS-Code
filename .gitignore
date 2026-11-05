@@ -148,3 +148,10 @@ vite.config.ts.timestamp-*
 
 # Java packages
 *.jar
+
+# JetBrains
+.idea
+
+# Local tooling
+CLAUDE*.md
+codebook.toml
