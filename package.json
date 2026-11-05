@@ -1,14 +1,24 @@
 {
     "name": "neojoin",
     "displayName": "NeoJoin",
-    "description": "NeoJoin VS Code extension",
+    "description": "Language support and live visualization for NeoJoin queries",
     "author": "Tobias Stickling",
+    "contributors": [
+        {
+            "name": "larsk21",
+            "url": "https://github.com/larsk21"
+        }
+    ],
     "license": "EPL-2.0",
     "version": "1.0.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vitruv-tools/NeoJoin-for-VS-Code"
     },
+    "bugs": {
+        "url": "https://github.com/vitruv-tools/NeoJoin-for-VS-Code/issues"
+    },
+    "homepage": "https://github.com/vitruv-tools/NeoJoin-for-VS-Code#readme",
     "publisher": "vitruv-tools",
     "engines": {
         "vscode": "^1.91.0"
@@ -109,6 +119,8 @@
     },
     "files": [
         "package.json",
+        "LICENSE",
+        "readme.md",
         "dist/extension.js",
         "src/language/*",
         "resources/**/*",
