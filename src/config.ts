@@ -1,3 +1,5 @@
+import { existsSync } from "fs";
+
 import * as vscode from "vscode";
 import { expandVariables } from "./expand";
 
@@ -28,6 +30,21 @@ class Config {
             "node_modules",
             ".git",
         ]);
+    }
+
+    /**
+     * Path to the PlantUML jar that is put on the class path of the language server. Empty if not configured.
+     */
+    get plantUmlJarPath() {
+        return expandVariables(this.#get("plantUmlJarPath", "")).trim();
+    }
+
+    /**
+     * Path to the configured PlantUML jar, or `undefined` if it is not configured or the file does not exist.
+     */
+    get plantUmlJar(): string | undefined {
+        const jarPath = this.plantUmlJarPath;
+        return jarPath !== "" && existsSync(jarPath) ? jarPath : undefined;
     }
 
     /**

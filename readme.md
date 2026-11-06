@@ -12,11 +12,23 @@ The extension starts the language server of NeoJoin (built in the NeoJoin reposi
 
 * [VSCode](https://code.visualstudio.com/) 1.91 or newer
 * [Graphviz](https://plantuml.com/graphviz-dot) *(for the view type visualization)*
+* The [PlantUML](https://plantuml.com/) jar *(for the view type visualization, see [PlantUML Jar](#plantuml-jar))*
 * JRE 17+ *(for the language server)*
 
 ### VSCode Extension
 
 Provides basic IDE support (syntax highlighting, code-completion, etc.) and a side-by-side live visualization of queries. Can be installed from the `.vsix` file via **Extensions** > 3-dot menu > **Install from VSIX...**.
+
+#### PlantUML Jar
+
+The query visualization is rendered with PlantUML, which is not part of the language server. To use the visualization:
+
+1. Download `plantuml-<version>.jar` (not the `-mit`, `-epl`, ... variants) from the [PlantUML releases](https://github.com/plantuml/plantuml/releases). The language server is built with version 1.2026.2; other versions may work, but only this one is tested.
+2. Place it anywhere on your machine, for example `~/plantuml.jar`.
+3. Set the setting `neojoin.plantUmlJarPath` (shown as *Neojoin: Plant Uml Jar Path*) to the path of the file, for example `${userHome}/plantuml.jar`.
+4. Run **NeoJoin: Restart Server**.
+
+Without the jar, everything else works (syntax highlighting, code completion, **Generate View Type**), but **Show Query Visualization** shows an error with a shortcut to the setting.
 
 #### Commands
 * **Show Query Visualization** - Show a live visualization of the queries in the currently active text editor.
@@ -25,6 +37,7 @@ Provides basic IDE support (syntax highlighting, code-completion, etc.) and a si
 
 #### Settings
 * **Meta Model Search Path** - Semicolon separated list of file URLs to search for source meta models.
+* **PlantUML Jar Path** - Path to the PlantUML jar that is needed for the visualization (see [PlantUML Jar](#plantuml-jar)).
 * **Debug** - Enable debug logging.
 
 ## Repository Structure
@@ -49,6 +62,7 @@ Provides basic IDE support (syntax highlighting, code-completion, etc.) and a si
     * The language server needs a few seconds to start up, so code completion / analysis will not work right at the start.
     * The extension requires that the `.jar` file of the language server has been generated.
     * Debugging assumes that the NeoJoin repository is placed next to this repository (`../NeoJoin`), because the extension starts the language server from `../NeoJoin/frontend/ide/target/tools.vitruv.neojoin.frontend.ide.jar`.
+    * The visualization needs a PlantUML jar also while debugging: set `neojoin.plantUmlJarPath` (see [PlantUML Jar](#plantuml-jar)) in your user settings (the extension development host uses them too, unless the launch configuration sets another user data directory), then restart the server (**Restart Server**).
     * If you cannot find the launch configuration `Launch Client`, ensure that you have opened VSCode with this repository as your workspace.
 * If you get the error message `Activating extension 'vitruv-tools.neojoin' failed: Cannot find module` check the build task for potential problems: Bottom Panel > Select tab `Terminal` > Select task `watch` (on the right)
 

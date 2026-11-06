@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import config from "../config";
 import { VisualizationPanelName } from "../constants";
 import VisualizationPanel, { createPanelOptions, PanelOptions } from "./panel";
 import VisualizationClient from "./request";
@@ -67,6 +68,11 @@ export default class VisualizationManager {
             return;
         }
 
+        if (config.plantUmlJar === undefined) {
+            this.#showMissingPlantUmlError();
+            return;
+        }
+
         const existingPanel = this.#activePanels.get(currentEditor.document);
         if (existingPanel) {
             existingPanel.reveal();
@@ -84,6 +90,30 @@ export default class VisualizationManager {
              this.#onDidChangeViewState(currentEditor.document));
 
         this.restore(panel, currentEditor.document, createPanelOptions());
+    }
+
+    /**
+     * The visualization needs the PlantUML jar, which is not part of the language server.
+     */
+    #showMissingPlantUmlError() {
+        const path = config.plantUmlJarPath;
+        const reason =
+            path === ""
+                ? "The setting 'neojoin.plantUmlJarPath' is not set."
+                : `The PlantUML jar '${path}' does not exist.`;
+        vscode.window
+            .showErrorMessage(
+                `NeoJoin: ${reason} Download the PlantUML jar and set its path in the settings. Restart the NeoJoin server afterwards.`,
+                "Open Settings"
+            )
+            .then((choice) => {
+                if (choice === "Open Settings") {
+                    vscode.commands.executeCommand(
+                        "workbench.action.openSettings",
+                        "neojoin.plantUmlJarPath"
+                    );
+                }
+            });
     }
 
     #onDidChangeViewState(document: vscode.TextDocument) {

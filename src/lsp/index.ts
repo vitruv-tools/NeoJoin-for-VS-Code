@@ -1,5 +1,5 @@
 import { homedir } from "os";
-import { resolve as resolvePath } from "path";
+import { delimiter, resolve as resolvePath } from "path";
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import {
@@ -49,6 +49,8 @@ const EXEC_OPTIONS = (() => {
     }
 })();
 
+const MAIN_CLASS = "tools.vitruv.neojoin.ide.Main";
+
 const CLIENT_OPTIONS: LanguageClientOptions = {
     documentSelector: [{ scheme: "file", language: "neojoin" }],
     connectionOptions: {
@@ -75,6 +77,20 @@ export class NeoJoinLanguageClient {
     }
 
     /**
+     * Builds the class path of the language server. The server jar does not contain PlantUML, so the configured
+     * PlantUML jar (needed for the visualization) is appended. Without it, the server still starts, but visualization
+     * requests fail.
+     */
+    #buildClassPath() {
+        const jars = [resolvePath(this.#extensionDir, EXEC_OPTIONS.jarFile)];
+        const plantUmlJar = config.plantUmlJar;
+        if (plantUmlJar !== undefined) {
+            jars.push(plantUmlJar);
+        }
+        return jars.join(delimiter);
+    }
+
+    /**
      * Builds the server options for the language client.
      */
     #buildServerOptions() {
@@ -83,8 +99,9 @@ export class NeoJoinLanguageClient {
             transport: TransportKind.stdio,
             args: [
                 ...EXEC_OPTIONS.jvmOpts,
-                "-jar",
-                resolvePath(this.#extensionDir, EXEC_OPTIONS.jarFile),
+                "-cp",
+                this.#buildClassPath(),
+                MAIN_CLASS,
                 "--meta-model-path",
                 config.metaModelSearchPath,
                 ...(config.excludedDirectories.length > 0
