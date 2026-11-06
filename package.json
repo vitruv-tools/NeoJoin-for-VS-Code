@@ -108,6 +108,12 @@
                     ],
                     "markdownDescription": "Names of directories that are not searched for queries, e.g. build output that contains copies of the queries.\n\n**Note:** Changes to this config entry require a [restart of the NeoJoin server](command:neojoin.restart)."
                 },
+                "neojoin.plantUmlJarPath": {
+                    "type": "string",
+                    "scope": "machine-overridable",
+                    "default": "",
+                    "markdownDescription": "Path to the PlantUML jar (`plantuml-<version>.jar`, download it from the [PlantUML releases](https://github.com/plantuml/plantuml/releases)). It is required for the query visualization, because the NeoJoin server does not contain PlantUML.\n\nExample: `${userHome}/plantuml.jar`\n\n**Note:** Changes to this config entry require a [restart of the NeoJoin server](command:neojoin.restart)."
+                },
                 "neojoin.debug": {
                     "type": "boolean",
                     "scope": "machine-overridable",
