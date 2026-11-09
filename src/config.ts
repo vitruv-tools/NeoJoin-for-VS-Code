@@ -1,4 +1,4 @@
-import { existsSync } from "fs";
+import { existsSync } from "node:fs";
 
 import * as vscode from "vscode";
 import { expandVariables } from "./expand";

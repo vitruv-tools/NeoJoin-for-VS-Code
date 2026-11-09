@@ -18,7 +18,6 @@ updates:
     eslint:
       patterns:
       - "@eslint/js"
-      - "@stylistic/eslint-plugin"
       - "eslint"
       - "typescript-eslint"
   ignore:

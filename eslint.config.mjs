@@ -1,28 +1,24 @@
 /**
  * ESLint configuration for the project.
  *
- * See https://eslint.style and https://typescript-eslint.io for additional linting options.
+ * Code quality only. The formatting (indentation, quotes, commas, line breaks) is checked by Prettier, see package.json
+ * (script format:check) and .editorconfig. See https://typescript-eslint.io for additional linting options.
  */
 // @ts-check
 import js from "@eslint/js";
-import stylistic from "@stylistic/eslint-plugin";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
     {
-        ignores: ["**/out"],
+        ignores: ["**/out", "dist"],
     },
     js.configs.recommended,
     ...tseslint.configs.recommended,
     ...tseslint.configs.stylistic,
     {
-        plugins: {
-            "@stylistic": stylistic,
-        },
         rules: {
             curly: "warn",
-            "@stylistic/semi": ["warn", "always"],
             "@typescript-eslint/no-empty-function": "off",
             "@typescript-eslint/naming-convention": [
                 "warn",
@@ -41,7 +37,7 @@ export default tseslint.config(
         },
     },
     {
-        files: ["*.cjs"],
+        files: ["**/*.cjs"],
         languageOptions: {
             globals: globals.node,
         },

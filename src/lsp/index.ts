@@ -1,5 +1,6 @@
-import { homedir } from "os";
-import { delimiter, resolve as resolvePath } from "path";
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { delimiter, resolve as resolvePath } from "node:path";
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import {
@@ -31,8 +32,12 @@ function debugLogFilePath(): string {
 const EXEC_OPTIONS = (() => {
     if (DEV) {
         return {
-            jarFile:
+            // the first existing jar is used: a local NeoJoin build next to this repository, or the snapshot
+            // downloaded with scripts/download-ide-jar.sh
+            jarFiles: [
                 "../NeoJoin/frontend/ide/target/tools.vitruv.neojoin.frontend.ide.jar",
+                "tools.vitruv.neojoin.frontend.ide.jar",
+            ],
             jvmOpts: [
                 "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,quiet=y,address=*:8000", // set suspend=y to wait for debugger on launch
             ],
@@ -40,7 +45,7 @@ const EXEC_OPTIONS = (() => {
         };
     } else {
         return {
-            jarFile: "tools.vitruv.neojoin.frontend.ide.jar",
+            jarFiles: ["tools.vitruv.neojoin.frontend.ide.jar"],
             jvmOpts: [],
             programOpts: config.debug
                 ? ["--trace", "--log", debugLogFilePath()]
@@ -82,7 +87,12 @@ export class NeoJoinLanguageClient {
      * requests fail.
      */
     #buildClassPath() {
-        const jars = [resolvePath(this.#extensionDir, EXEC_OPTIONS.jarFile)];
+        const candidates = EXEC_OPTIONS.jarFiles.map((file) =>
+            resolvePath(this.#extensionDir, file)
+        );
+        const jars = [
+            candidates.find((file) => existsSync(file)) ?? candidates[0],
+        ];
         const plantUmlJar = config.plantUmlJar;
         if (plantUmlJar !== undefined) {
             jars.push(plantUmlJar);
@@ -105,7 +115,10 @@ export class NeoJoinLanguageClient {
                 "--meta-model-path",
                 config.metaModelSearchPath,
                 ...(config.excludedDirectories.length > 0
-                    ? ["--excluded-directories", config.excludedDirectories.join(";")]
+                    ? [
+                          "--excluded-directories",
+                          config.excludedDirectories.join(";"),
+                      ]
                     : []),
                 ...EXEC_OPTIONS.programOpts,
             ],
