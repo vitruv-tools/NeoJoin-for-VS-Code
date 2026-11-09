@@ -104,7 +104,7 @@ export default class VisualizationPanel {
             if (message?.command === "option") {
                 (this.#options as any)[message.option] = message.value;
                 console.log(
-                    `set option message: ${message.option}: ${message.value}; set ${this.#options}`
+                    `set option message: ${message.option}: ${message.value}; set ${JSON.stringify(this.#options)}`
                 );
                 this.update(true);
             }
