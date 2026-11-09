@@ -152,6 +152,15 @@ vite.config.ts.timestamp-*
 # JetBrains
 .idea
 
-# Local tooling
+### Local tooling and working notes ###
+# AI assistant instructions and settings
 CLAUDE*.md
+AGENTS.md
+GEMINI.md
+.claude/
+# spell checker
 codebook.toml
+# working notes, local only
+/TODO.md
+/BRANCH_SUMMARY.md
+/CHECKLIST.md
