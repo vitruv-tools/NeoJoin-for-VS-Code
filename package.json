@@ -10,7 +10,7 @@
         }
     ],
     "license": "EPL-2.0",
-    "version": "1.0.0",
+    "version": "0.1.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/vitruv-tools/NeoJoin-for-VS-Code"
@@ -135,21 +135,26 @@
     "scripts": {
         "compile": "npm run check-types && node esbuild.cjs",
         "check-types": "tsc --noEmit",
-        "watch": "npm-run-all -p watch:*",
-        "watch:esbuild": "node esbuild.cjs --watch",
-        "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-        "vscode:prepublish": "npm run package",
-        "package": "npm run check-types && node esbuild.cjs --production"
+        "lint": "eslint . --max-warnings 0",
+        "format": "prettier --write \"**/*.{ts,cjs,mjs}\"",
+        "format:check": "prettier --check \"**/*.{ts,cjs,mjs}\"",
+        "watch": "node scripts/watch.cjs",
+        "bundle:production": "npm run check-types && node esbuild.cjs --production",
+        "vscode:prepublish": "npm run bundle:production",
+        "package": "vsce package --no-dependencies --out neojoin.vsix"
+    },
+    "config": {
+        "languageServerVersion": "0.1.0-SNAPSHOT"
     },
     "devDependencies": {
         "@eslint/js": "^10.0.1",
-        "@stylistic/eslint-plugin": "^5.10.0",
         "@types/node": "^20",
         "@types/vscode": "~1.91.0",
+        "@vscode/vsce": "^4.1.0",
         "esbuild": "^0.28.2",
         "eslint": "^10.14.0",
         "globals": "^17.14.0",
-        "npm-run-all": "^4.1.5",
+        "prettier": "^3.9.10",
         "typescript": "^5.9.3",
         "typescript-eslint": "^8.72.1"
     },

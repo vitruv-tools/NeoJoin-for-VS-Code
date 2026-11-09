@@ -22,7 +22,10 @@ enum MessageType {
 }
 
 class Message {
-    constructor(public readonly type: MessageType, public readonly message: string) {}
+    constructor(
+        public readonly type: MessageType,
+        public readonly message: string
+    ) {}
 }
 
 export interface PanelOptions {
@@ -100,7 +103,9 @@ export default class VisualizationPanel {
         webview.webview.onDidReceiveMessage((message?: Record<string, any>) => {
             if (message?.command === "option") {
                 (this.#options as any)[message.option] = message.value;
-                console.log(`set option message: ${message.option}: ${message.value}; set ${this.#options}`);
+                console.log(
+                    `set option message: ${message.option}: ${message.value}; set ${this.#options}`
+                );
                 this.update(true);
             }
         });
@@ -182,7 +187,12 @@ export default class VisualizationPanel {
 
             this.#lastSvg = result.value.svg;
             this.#lastMessage = new Message(type, result.value.message || "");
-            this.#sendToWebview(type, result.value.message, result.value.svg, this.#options);
+            this.#sendToWebview(
+                type,
+                result.value.message,
+                result.value.svg,
+                this.#options
+            );
         }
     }
 
@@ -191,10 +201,12 @@ export default class VisualizationPanel {
     }
 
     #sendCurrentStateToWebview() {
-        this.#sendToWebview(this.#lastMessage?.type || MessageType.Ok,
-                            this.#lastMessage?.message || "",
-                            this.#lastSvg,
-                            this.#options);
+        this.#sendToWebview(
+            this.#lastMessage?.type || MessageType.Ok,
+            this.#lastMessage?.message || "",
+            this.#lastSvg,
+            this.#options
+        );
     }
 
     /**
@@ -203,7 +215,12 @@ export default class VisualizationPanel {
      * @param message optional info message to show
      * @param svg optional visualization as SVG string to display
      */
-    #sendToWebview(type: MessageType, message = "", svg?: string, options?: PanelOptions) {
+    #sendToWebview(
+        type: MessageType,
+        message = "",
+        svg?: string,
+        options?: PanelOptions
+    ) {
         this.webview.webview.postMessage({ type, message, svg, options });
     }
 

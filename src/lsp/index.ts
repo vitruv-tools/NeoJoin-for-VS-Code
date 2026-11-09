@@ -115,7 +115,10 @@ export class NeoJoinLanguageClient {
                 "--meta-model-path",
                 config.metaModelSearchPath,
                 ...(config.excludedDirectories.length > 0
-                    ? ["--excluded-directories", config.excludedDirectories.join(";")]
+                    ? [
+                          "--excluded-directories",
+                          config.excludedDirectories.join(";"),
+                      ]
                     : []),
                 ...EXEC_OPTIONS.programOpts,
             ],
