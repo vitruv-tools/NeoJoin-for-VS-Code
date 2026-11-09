@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+    - main
+  # The language server is the latest snapshot from Maven Central, which changes independently of this repository.
+  # Same time as the nightly build of NeoJoin, which deploys these snapshots. GitHub delays scheduled runs, so the order of the
+  # two builds is not guaranteed: a build may use the snapshot of the previous night.
+  schedule:
+  - cron: "0 2 * * *"
+
+jobs:
+  build-extension:
+    name: Build extension
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+
+    - name: Setup Node.js and npm cache
+      uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '20'
+        check-latest: true
+        cache: 'npm'
+
+    # The language server (shaded IDE jar of NeoJoin) is packaged next to the extension, see "files" in package.json.
+    - name: Download language server
+      shell: bash
+      run: scripts/download-ide-jar.sh
+
+    - name: Install dependencies
+      run: npm clean-install
+
+    # vsce runs the script vscode:prepublish first (type check and production bundle with esbuild).
+    - name: Package extension
+      run: npm run package
+
+    - name: Upload build results
+      uses: actions/upload-artifact@v7
+      with:
+        name: neojoin.vsix
+        path: neojoin.vsix
+        if-no-files-found: error
+
+  # Separate job, so that a style violation shows up on its own (and only once, not per platform). Runs after the Linux
+  # build like the Checkstyle job in the NeoJoin repository.
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: build-extension
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+
+    - name: Setup Node.js and npm cache
+      uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '20'
+        check-latest: true
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm clean-install
+
+    # ESLint (code quality, warnings fail the job, too) and Prettier (formatting, configured by .editorconfig).
+    - name: Lint
+      run: npm run lint
+
+    - name: Check formatting
+      run: npm run format:check
+
+  build-extension-other-platforms:
+    name: Build extension
+    runs-on: ${{ matrix.os }}
+    needs: build-extension
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+
+    - name: Setup Node.js and npm cache
+      uses: actions/setup-node@v7.1.0
+      with:
+        node-version: '20'
+        check-latest: true
+        cache: 'npm'
+
+    # The language server (shaded IDE jar of NeoJoin) is packaged next to the extension, see "files" in package.json.
+    - name: Download language server
+      shell: bash
+      run: scripts/download-ide-jar.sh
+
+    - name: Install dependencies
+      run: npm clean-install
+
+    # vsce runs the script vscode:prepublish first (type check and production bundle with esbuild).
+    - name: Package extension
+      run: npm run package
+
+  sonar:
+    name: SonarQube scan of the extension
+    if: github.event_name == 'schedule' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
+    runs-on: ubuntu-latest
+    needs: build-extension
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+      with:
+        fetch-depth: 0
+
+    - name: Analyze sources
+      uses: SonarSource/sonarqube-scan-action@v8.4.1
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      with:
+        args: >
+          -Dsonar.host.url=https://sonarcloud.io
+          -Dsonar.organization=vitruv-tools
+          -Dsonar.projectKey=vitruv-tools_NeoJoin-for-VS-Code
+          -Dsonar.sources=src
