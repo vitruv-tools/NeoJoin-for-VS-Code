@@ -1,6 +1,6 @@
-import { existsSync } from "fs";
-import { homedir } from "os";
-import { delimiter, resolve as resolvePath } from "path";
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { delimiter, resolve as resolvePath } from "node:path";
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
 import {
