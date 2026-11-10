@@ -79,6 +79,12 @@ Without the jar, everything else works (syntax highlighting, code completion, **
 GitHub Actions builds the extension on Linux, macOS and Windows with the latest language server snapshot; nothing is published automatically.
 We use [SonarQube](https://sonarcloud.io/project/overview?id=vitruv-tools_NeoJoin-for-VS-Code) to analyze the sources.
 
+### Code Style
+
+The formatting is checked with Prettier (`npm run format:check`; `npm run format` rewrites the files) and the code with ESLint (`npm run lint`).
+
+Commits that only change the formatting of the code are listed in `.git-blame-ignore-revs`, so that `git blame` skips them. GitHub applies the file automatically; locally, run `git config blame.ignoreRevsFile .git-blame-ignore-revs` once.
+
 ## Used Technology
 
 * [VSCode Extension API](https://code.visualstudio.com/api) and [TypeScript](https://www.typescriptlang.org/)
