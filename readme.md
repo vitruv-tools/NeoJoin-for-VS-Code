@@ -7,6 +7,7 @@
 
 This repository contains the [VSCode](https://code.visualstudio.com/) extension for [NeoJoin](https://github.com/vitruv-tools/NeoJoin), a declarative query language for view-based model-driven software development.
 The extension starts the language server of NeoJoin (built in the NeoJoin repository) and visualizes the queries.
+Other repositories of the project are listed under the [neojoin topic](https://github.com/topics/neojoin) on GitHub.
 
 ## Usage
 
