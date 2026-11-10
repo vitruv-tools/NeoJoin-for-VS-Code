@@ -1,0 +1,40 @@
+name: Bug report
+description: Something does not work as expected
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please reduce the problem to a minimal example (the smallest query and meta-models that still show it) instead of attaching your whole project.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to reproduce
+      description: 'The query, the extension settings and the steps in VS Code.'
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: 'Extension version or commit, language server (NeoJoin snapshot) version'
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: 'VS Code version, Java version, Graphviz and PlantUML versions, operating system'
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: 'Paste the relevant lines, for example a stack trace or error message. The output channel "NeoJoin Language Server" shows the server log; with the setting `neojoin.debug` enabled, the server also writes `neojoin-debug.log`.'
+      render: text
