@@ -91,7 +91,7 @@
                     "type": "string",
                     "scope": "machine-overridable",
                     "default": "${workspaceFolder}",
-                    "markdownDescription": "List of search paths for meta models (*.ecore files) separated by semicolons. Found models can be imported in NeoJoin queries.\n\nExample: `/path/to/directory;/path/to/model.ecore;C:/path/to/archive.jar`\n\n**Note:** Changes to this config entry or the directory on disk require a [restart of the NeoJoin server](command:neojoin.restart)."
+                    "markdownDescription": "List of search paths for meta models (*.ecore files) separated by semicolons. Found models can be imported in NeoJoin queries.\n\nExample: `/path/to/directory;/path/to/model.ecore;C:/path/to/archive.jar`\n\n**Note:** Changes to the files on disk require a restart of the language server (**NeoJoin: Restart Server**)."
                 },
                 "neojoin.excludedDirectories": {
                     "type": "array",
@@ -106,19 +106,25 @@
                         "node_modules",
                         ".git"
                     ],
-                    "markdownDescription": "Names of directories that are not searched for queries, e.g. build output that contains copies of the queries.\n\n**Note:** Changes to this config entry require a [restart of the NeoJoin server](command:neojoin.restart)."
+                    "markdownDescription": "Names of directories that are not searched for queries, e.g. build output that contains copies of the queries."
+                },
+                "neojoin.javaPath": {
+                    "type": "string",
+                    "scope": "machine-overridable",
+                    "default": "",
+                    "markdownDescription": "Path to the `java` program that runs the language server (Java 17 or later). If empty, the extension uses `bin/java` of the environment variable `JAVA_HOME`, or else `java` from the `PATH`.\n\nExample: `/usr/lib/jvm/java-21/bin/java`"
                 },
                 "neojoin.plantUmlJarPath": {
                     "type": "string",
                     "scope": "machine-overridable",
                     "default": "",
-                    "markdownDescription": "Path to the PlantUML jar (`plantuml-<version>.jar`, download it from the [PlantUML releases](https://github.com/plantuml/plantuml/releases)). It is required for the query visualization, because the NeoJoin server does not contain PlantUML.\n\nExample: `${userHome}/plantuml.jar`\n\n**Note:** Changes to this config entry require a [restart of the NeoJoin server](command:neojoin.restart)."
+                    "markdownDescription": "Path to the PlantUML jar (`plantuml-<version>.jar`, download it from the [PlantUML releases](https://github.com/plantuml/plantuml/releases)). It is required for the query visualization, because the language server does not contain PlantUML.\n\nExample: `${userHome}/plantuml.jar`"
                 },
                 "neojoin.debug": {
                     "type": "boolean",
                     "scope": "machine-overridable",
                     "default": false,
-                    "markdownDescription": "Enable debug logging into `neojoin-debug.log`. Requires a [restart of the NeoJoin server](command:neojoin.restart)."
+                    "markdownDescription": "Enable debug logging into `neojoin-debug.log`."
                 }
             }
         }

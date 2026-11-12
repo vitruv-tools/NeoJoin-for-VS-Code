@@ -1,93 +1,85 @@
 import * as vscode from "vscode";
 import { ExtensionContext } from "vscode";
-import { State } from "vscode-languageclient/node";
 
 import * as lsp from "./lsp";
 import { delay, getErrorMessage } from "./utils";
+import * as viewType from "./viewtype";
 import * as visualization from "./visualization";
 import VisualizationManager from "./visualization/manager";
 
-function registerCommands(
+/**
+ * Restarts the language server with a progress indicator and reports a failure.
+ */
+function restartServer(
+    languageClient: lsp.NeoJoinLanguageClient,
+    visualizationManager: VisualizationManager
+) {
+    return vscode.window.withProgress(
+        {
+            location: vscode.ProgressLocation.Window,
+            title: "Restarting the NeoJoin language server",
+            cancellable: false,
+        },
+        async (progress, _) => {
+            try {
+                progress.report({
+                    increment: 0, // 0%
+                    message: "Stopping ...",
+                });
+                await languageClient.restart(() =>
+                    progress.report({
+                        increment: 50, // 50%
+                        message: "Starting ...",
+                    })
+                );
+                visualizationManager.updateAll(true);
+                progress.report({ increment: 49, message: "Done" }); // 99%
+                await delay(1000);
+            } catch (e) {
+                languageClient.showServerError(
+                    "Failed to restart the language server: " +
+                        getErrorMessage(e)
+                );
+            }
+        }
+    );
+}
+
+function registerRestartCommand(
     context: ExtensionContext,
     languageClient: lsp.NeoJoinLanguageClient,
     visualizationManager: VisualizationManager
 ) {
     context.subscriptions.push(
         vscode.commands.registerCommand("neojoin.restart", () => {
-            if (languageClient.state === State.Starting) {
-                vscode.window.showErrorMessage(
-                    "Cannot restart NeoJoin: Server is currently starting."
-                );
-                return;
-            }
-
-            return vscode.window.withProgress(
-                {
-                    location: vscode.ProgressLocation.Window,
-                    title: "Restarting NeoJoin",
-                    cancellable: false,
-                },
-                async (progress, _) => {
-                    try {
-                        progress.report({
-                            increment: 0, // 0%
-                            message: "Stopping ...",
-                        });
-                        await languageClient.stop();
-                        if (DEV) {
-                            // wait for the java agent port to be released
-                            await delay(1000);
-                        }
-                        languageClient.reload();
-                        progress.report({
-                            increment: 50, // 50%
-                            message: "Starting ...",
-                        });
-                        await languageClient.start();
-                        visualizationManager.updateAll(true);
-                        progress.report({ increment: 49, message: "Done" }); // 99%
-                        await delay(1000);
-                    } catch (e) {
-                        vscode.window.showErrorMessage(
-                            "Failed to restart NeoJoin: " + getErrorMessage(e)
-                        );
-                    }
-                }
-            );
+            languageClient.allowAutomaticRestart();
+            return restartServer(languageClient, visualizationManager);
         })
     );
+}
+
+/**
+ * The language server reads the settings only when it starts, so a change of them offers a restart.
+ */
+function offerRestartOnSettingsChange(context: ExtensionContext) {
+    // several changes in a row (for example while typing a path) offer the restart only once
+    let offerShown = false;
     context.subscriptions.push(
-        vscode.commands.registerCommand("neojoin.generate-viewtype", () => {
-            if (languageClient.state !== State.Running) {
-                vscode.window.showErrorMessage(
-                    "NeoJoin: Language server not ready"
-                );
+        vscode.workspace.onDidChangeConfiguration((event) => {
+            if (!event.affectsConfiguration("neojoin") || offerShown) {
                 return;
             }
-
-            const currentEditor = vscode.window.activeTextEditor;
-            if (!currentEditor) {
-                vscode.window.showErrorMessage("NeoJoin: No active editor");
-                return;
-            }
-
-            if (currentEditor.document.languageId !== "neojoin") {
-                vscode.window.showErrorMessage(
-                    "NeoJoin: Not a NeoJoin query file"
-                );
-                return;
-            }
-
-            languageClient
-                .sendRequest<Response>("viewtype", {
-                    textDocument: languageClient.getDocumentId(
-                        currentEditor.document
-                    ),
-                })
-                .catch((reason) => {
-                    vscode.window.showErrorMessage(
-                        "NeoJoin: " + reason.message
-                    );
+            offerShown = true;
+            void vscode.window
+                .showInformationMessage(
+                    "NeoJoin: The settings changed. Restart the language server to apply them.",
+                    "Restart Server"
+                )
+                .then((choice) => {
+                    offerShown = false;
+                    if (choice === "Restart Server") {
+                        void vscode.commands.executeCommand("neojoin.restart");
+                    }
                 });
         })
     );
@@ -95,21 +87,36 @@ function registerCommands(
 
 export async function activate(context: ExtensionContext) {
     try {
-        const languageClient = await lsp.createLanguageClient(context);
+        const languageClient = lsp.createLanguageClient(context);
+        try {
+            await languageClient.start();
+        } catch (e) {
+            // the commands are still registered, so that the server can be restarted
+            languageClient.showServerError(
+                "Failed to start the language server: " + getErrorMessage(e)
+            );
+        }
         const visualizationManager = await visualization.activate(
             context,
             languageClient
         );
-        registerCommands(context, languageClient, visualizationManager);
+        viewType.activate(context, languageClient);
+        registerRestartCommand(context, languageClient, visualizationManager);
+        context.subscriptions.push(
+            languageClient.onDidCrash(() =>
+                restartServer(languageClient, visualizationManager)
+            )
+        );
+        offerRestartOnSettingsChange(context);
 
         if (DEV) {
             vscode.window.showInformationMessage(
-                "NeoJoin initialized in development mode."
+                "NeoJoin extension initialized in development mode."
             );
         }
     } catch (e) {
         vscode.window.showErrorMessage(
-            "Failed to initialize NeoJoin Extension: " + getErrorMessage(e)
+            "Failed to initialize NeoJoin extension: " + getErrorMessage(e)
         );
     }
 }
