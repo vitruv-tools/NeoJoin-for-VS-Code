@@ -78,6 +78,7 @@ Without the jar, everything else works (syntax highlighting, code completion, **
 
 GitHub Actions builds the extension on Linux, macOS and Windows with the latest language server snapshot; nothing is published automatically.
 We use [SonarQube](https://sonarcloud.io/project/overview?id=vitruv-tools_NeoJoin-for-VS-Code) to analyze the sources.
+Crashes, restarts and hanging servers are tested manually, see [docs/server-lifecycle-tests.md](docs/server-lifecycle-tests.md).
 
 ### Structure
 
