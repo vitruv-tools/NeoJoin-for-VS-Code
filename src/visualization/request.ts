@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { State } from "vscode-languageclient";
 
 import { NeoJoinLanguageClient } from "../lsp";
 
@@ -35,13 +34,28 @@ export default class VisualizationClient {
     /**
      * Returns whether the visualization client is ready to handle requests.
      */
-    get ready() {
-        return this.#languageClient.state === State.Running;
+    get isReady() {
+        return this.#languageClient.isRunning;
+    }
+
+    /**
+     * Returns whether the language server is still starting.
+     */
+    get isStarting() {
+        return this.#languageClient.isStarting;
+    }
+
+    /**
+     * Shows an error message that offers to restart the language server, see
+     * {@link NeoJoinLanguageClient.showServerError}.
+     */
+    showServerError(message: string) {
+        this.#languageClient.showServerError(message);
     }
 
     #request<T>(method: string, param?: any): Promise<T> {
-        if (!this.ready) {
-            throw new Error("Visualization client not available");
+        if (!this.isReady) {
+            throw new Error("The language server is not running.");
         }
         return this.#languageClient.sendRequest(method, param);
     }

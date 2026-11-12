@@ -3,7 +3,7 @@
         "module": "node16",
         "moduleResolution": "node16",
         "target": "es2020",
-        "lib": ["es2020"],
+        "lib": ["es2020", "es2022.error"],
         "outDir": "out",
         "rootDir": "src",
         "sourceMap": true,

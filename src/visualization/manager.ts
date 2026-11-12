@@ -50,21 +50,29 @@ export default class VisualizationManager {
      * Show a visualization panel for the currently active document.
      */
     show() {
-        if (!this.#client.ready) {
-            vscode.window.showErrorMessage(
-                "NeoJoin: Language server not ready"
-            );
+        if (!this.#client.isReady) {
+            if (this.#client.isStarting) {
+                vscode.window.showErrorMessage(
+                    "NeoJoin: The language server is still starting."
+                );
+            } else {
+                this.#client.showServerError(
+                    "The language server is not running."
+                );
+            }
             return;
         }
 
         const currentEditor = vscode.window.activeTextEditor;
         if (!currentEditor) {
-            vscode.window.showErrorMessage("NeoJoin: No active editor");
+            vscode.window.showErrorMessage("NeoJoin: No active editor.");
             return;
         }
 
         if (currentEditor.document.languageId !== "neojoin") {
-            vscode.window.showErrorMessage("NeoJoin: Not a NeoJoin query file");
+            vscode.window.showErrorMessage(
+                "NeoJoin: Not a NeoJoin query file."
+            );
             return;
         }
 
@@ -104,7 +112,7 @@ export default class VisualizationManager {
                 : `The PlantUML jar '${path}' does not exist.`;
         vscode.window
             .showErrorMessage(
-                `NeoJoin: ${reason} Download the PlantUML jar and set its path in the settings. Restart the NeoJoin server afterwards.`,
+                `NeoJoin: ${reason} Download the PlantUML jar and set its path in the settings.`,
                 "Open Settings"
             )
             .then((choice) => {
