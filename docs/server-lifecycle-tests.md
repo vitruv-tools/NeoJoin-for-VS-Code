@@ -183,5 +183,5 @@ Run scenarios 1 to 5 and 10 also with the packaged extension: build it with the 
 ## Platform Notes
 
 - Linux and macOS: the server runs in its own process group; killing the group also ends Graphviz, also after a crash of the server.
-- Windows: a killed server is ended with its process tree (`taskkill /T`). Graphviz processes of a crashed server are not ended.
+- Windows: only the server process is killed. Graphviz processes of a killed or crashed server keep running until they finish (Node.js cannot kill a process tree on Windows).
 - The server ends its child processes when it exits normally (also when VS Code closes the connection), but not when it is killed.

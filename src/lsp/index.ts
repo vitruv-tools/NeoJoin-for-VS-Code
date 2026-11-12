@@ -547,7 +547,7 @@ export class NeoJoinLanguageClient {
             // a starting server would otherwise outlive VS Code until it reads the end of its input
             const server = this.#serverProcesses.get(client);
             if (server !== undefined) {
-                void killServer(server);
+                killServer(server);
             }
         }
         // stopping fails for a client that is not running; there is nothing left to report on deactivation

@@ -1,4 +1,4 @@
-import { ChildProcess, execFile, spawn } from "node:child_process";
+import { ChildProcess, spawn } from "node:child_process";
 import * as vscode from "vscode";
 
 import { delay } from "../utils";
@@ -62,26 +62,20 @@ function killProcessGroup(server: ChildProcess) {
 }
 
 /**
- * Kills the server and the processes it started.
+ * Kills the server and, on Linux and macOS, the processes it started. On Windows, Node.js cannot kill a process tree, so
+ * the processes started by a killed server keep running (the server only terminates them when it exits normally).
  */
-export async function killServer(server: ChildProcess) {
-    if (!isWindows) {
+export function killServer(server: ChildProcess) {
+    if (isWindows) {
+        server.kill();
+    } else {
         killProcessGroup(server);
-    } else if (server.pid !== undefined) {
-        // kills the process tree; a failure (for example, the process exited in the meantime) is handled by the caller
-        await new Promise((resolve) =>
-            execFile(
-                "taskkill",
-                ["/T", "/F", "/PID", String(server.pid)],
-                resolve
-            )
-        );
     }
 }
 
 /**
- * Waits until the server has exited. A server that has not exited after the grace period is killed together with the
- * processes it started.
+ * Waits until the server has exited. A server that has not exited after the grace period is killed (see
+ * {@link killServer}).
  *
  * @param graceMs time the server gets to exit by itself, for example after the exit notification of the language
  *     server protocol; 0 kills it right away
@@ -103,7 +97,7 @@ export async function terminateServer(
     if (graceMs > 0 && (await Promise.race([exited, timeout(graceMs)]))) {
         return;
     }
-    await killServer(server);
+    killServer(server);
     if (!(await Promise.race([exited, timeout(timeoutMs)]))) {
         throw new Error("The language server process did not exit.");
     }
