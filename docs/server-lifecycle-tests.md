@@ -142,8 +142,10 @@ Run them in this order; scenario 2 relies on the manual restart at the end of sc
     3. Delete the marker and click **Restart Server**.
     4. Expected: the server runs; all NeoJoin commands are available.
 8. **Java missing**
-    1. In `src/lsp/index.ts`, change the command `"java"` temporarily to a name that does not exist, and start **Launch Client**.
-    2. Expected: one error box "Failed to start the language server: Java could not be started (...): ... ENOENT. Install Java 17 or later and make sure that it is on the PATH." Revert the change afterwards.
+    1. Set *Java Path* (`neojoin.javaPath`) to a path that does not exist, for example `/nonexistent/java`, and click **Restart Server** in the box that offers the restart.
+    2. Expected: one error box "Failed to restart the language server: Java could not be started ('/nonexistent/java'): ... ENOENT. Install Java 17 or later and set the path of its java program in the setting 'neojoin.javaPath' ...".
+    3. Set *Java Path* to the `java` program of an installed Java 17 or later and restart again.
+    4. Expected: the server runs; `pgrep -fl tools.vitruv.neojoin` shows that path as the command. Clear the setting afterwards.
 
 ### Restarts and Stopping
 

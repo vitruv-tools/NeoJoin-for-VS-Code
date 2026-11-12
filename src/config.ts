@@ -1,4 +1,5 @@
 import { existsSync } from "node:fs";
+import { join } from "node:path";
 
 import * as vscode from "vscode";
 import { expandVariables } from "./expand";
@@ -30,6 +31,32 @@ class Config {
             "node_modules",
             ".git",
         ]);
+    }
+
+    /**
+     * Configured path to the `java` program. Empty if not configured.
+     */
+    get javaPath() {
+        return expandVariables(this.#get("javaPath", "")).trim();
+    }
+
+    /**
+     * Command that starts Java for the language server: the configured path, else `bin/java` of `JAVA_HOME`, else `java`
+     * from the `PATH`.
+     */
+    get javaCommand() {
+        if (this.javaPath !== "") {
+            return this.javaPath;
+        }
+        const javaHome = process.env.JAVA_HOME?.trim();
+        if (javaHome) {
+            return join(
+                javaHome,
+                "bin",
+                process.platform === "win32" ? "java.exe" : "java"
+            );
+        }
+        return "java";
     }
 
     /**

@@ -16,7 +16,7 @@ Other repositories of the project are listed under the [neojoin topic](https://g
 * [VSCode](https://code.visualstudio.com/) 1.91 or newer
 * [Graphviz](https://plantuml.com/graphviz-dot) *(for the view type visualization)*
 * The [PlantUML](https://plantuml.com/) jar *(for the view type visualization, see [PlantUML Jar](#plantuml-jar))*
-* JRE 17+ *(for the language server)*
+* JRE 17+ *(for the language server; the extension uses the setting **Java Path**, else `JAVA_HOME`, else `java` from the `PATH`)*
 
 ### VSCode Extension
 
@@ -40,6 +40,7 @@ Without the jar, everything else works (syntax highlighting, code completion, **
 
 #### Settings
 * **Meta Model Search Path** - Semicolon separated list of file URLs to search for source meta models.
+* **Java Path** - Path to the `java` program for the language server, if not `bin/java` of `JAVA_HOME` or `java` from the `PATH`.
 * **PlantUML Jar Path** - Path to the PlantUML jar that is needed for the visualization (see [PlantUML Jar](#plantuml-jar)).
 * **Debug** - Enable debug logging.
 

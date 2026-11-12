@@ -236,7 +236,7 @@ export class NeoJoinLanguageClient {
      */
     #buildServerCommand() {
         return {
-            command: "java",
+            command: config.javaCommand,
             args: [
                 ...EXEC_OPTIONS.jvmOpts,
                 "-cp",
@@ -276,7 +276,7 @@ export class NeoJoinLanguageClient {
         } catch (error) {
             const hint =
                 (error as NodeJS.ErrnoException).code === "ENOENT"
-                    ? " Install Java 17 or later and make sure that it is on the PATH."
+                    ? " Install Java 17 or later and set the path of its java program in the setting 'neojoin.javaPath' (or set JAVA_HOME, or put it on the PATH)."
                     : "";
             throw new Error(
                 `Java could not be started ('${command}'): ${getErrorMessage(error)}.${hint}`,

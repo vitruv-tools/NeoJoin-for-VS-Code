@@ -108,6 +108,12 @@
                     ],
                     "markdownDescription": "Names of directories that are not searched for queries, e.g. build output that contains copies of the queries."
                 },
+                "neojoin.javaPath": {
+                    "type": "string",
+                    "scope": "machine-overridable",
+                    "default": "",
+                    "markdownDescription": "Path to the `java` program that runs the language server (Java 17 or later). If empty, the extension uses `bin/java` of the environment variable `JAVA_HOME`, or else `java` from the `PATH`.\n\nExample: `/usr/lib/jvm/java-21/bin/java`"
+                },
                 "neojoin.plantUmlJarPath": {
                     "type": "string",
                     "scope": "machine-overridable",
