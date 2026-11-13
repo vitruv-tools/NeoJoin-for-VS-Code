@@ -238,6 +238,10 @@ export class NeoJoinLanguageClient {
         return {
             command: config.javaCommand,
             args: [
+                // PlantUML uses AWT for the visualization, which otherwise initializes the GUI toolkit of the platform
+                // and turns the server into a GUI application (the server also sets this itself, but older server jars
+                // do not)
+                "-Djava.awt.headless=true",
                 ...EXEC_OPTIONS.jvmOpts,
                 "-cp",
                 this.#buildClassPath(),
